@@ -101,17 +101,39 @@ describe('withReflection', () => {
     it('Should not reflect if attrName is not declared in parameters.', () => {
       const dummy = new Dummy();
       dummy.connectedCallback();
-      dummy.attributeChangedCallback('notSet', '40', '50');
+      dummy.attributeChangedCallback('notSet', '40', '72');
       expect(spy).not.to.have.been.called;
     });
 
     it('Should wait until connected before reflecting an attribute.', () => {
       const dummy = new Dummy();
-      dummy.attributeChangedCallback('attrOne', '40', '50');
+      dummy.attributeChangedCallback('attrOne', '40', '72');
       expect(spy).not.to.have.been.called;
 
       dummy.connectedCallback();
-      expect(spy).to.have.been.calledWith('toProp', '50');
+      expect(spy).to.have.been.calledWith('toProp', '72');
+    });
+
+    it('Should not reflect if old and new values are the same.', () => {
+      const dummy = new Dummy();
+      dummy.connectedCallback();
+      dummy.attributeChangedCallback('attrOne', '40', '40');
+      expect(spy).not.to.have.been.called;
+    });
+
+    it('Should reflect without coercion when toProp is not set.', () => {
+      const dummy = new Dummy();
+      dummy.connectedCallback();
+      dummy.attributeChangedCallback('attrTwo', '40', '72');
+      expect(spy).not.to.have.been.called;
+    });
+
+    it('Should not break when parameters are not set.', () => {
+      const Empty = withReflection();
+      const empty = new Empty();
+      empty.connectedCallback();
+      empty.attributeChangedCallback('notSet', '40', '72');
+      expect(Empty.parameters).to.be.undefined;
     });
 
     it('Should not discard super.attributeChangedCallback.', () => {
@@ -125,17 +147,39 @@ describe('withReflection', () => {
     it('Should not reflect if propName is not declared in parameters.', () => {
       const dummy = new Dummy();
       dummy.connectedCallback();
-      dummy.propertyChangedCallback('notSet', '40', '50');
+      dummy.propertyChangedCallback('notSet', '40', '72');
       expect(spy).not.to.have.been.called;
     });
 
     it('Should wait until connected before reflecting a property.', () => {
       const dummy = new Dummy();
-      dummy.propertyChangedCallback('propOne', '40', '50');
+      dummy.propertyChangedCallback('propOne', '40', '72');
       expect(spy).not.to.have.been.called;
 
       dummy.connectedCallback();
-      expect(spy).to.have.been.calledWith('toAttr', '50');
+      expect(spy).to.have.been.calledWith('toAttr', '72');
+    });
+
+    it('Should not reflect if old and new values are the same.', () => {
+      const dummy = new Dummy();
+      dummy.connectedCallback();
+      dummy.propertyChangedCallback('propOne', '40', '40');
+      expect(spy).not.to.have.been.called;
+    });
+
+    it('Should reflect without coercion when toAttr is not set.', () => {
+      const dummy = new Dummy();
+      dummy.connectedCallback();
+      dummy.propertyChangedCallback('propTwo', '40', '72');
+      expect(spy).not.to.have.been.called;
+    });
+
+    it('Should not break when parameters are not set.', () => {
+      const Empty = withReflection();
+      const empty = new Empty();
+      empty.connectedCallback();
+      empty.propertyChangedCallback('notSet', '40', '72');
+      expect(Empty.parameters).to.be.undefined;
     });
 
     it('Should not discard super.propertyChangedCallback.', () => {
