@@ -1,9 +1,8 @@
 import withObservedProperties from 'observed-properties';
 import withWhenConnected from './withWhenConnected.js';
 import setAttr from '../helpers/setAttr.js';
-
-const same = arg => arg;
-const capitalize = str => `${str.slice(0, 1).toUpperCase()}${str.slice(1)}`;
+import same from '../helpers/same.js';
+import capitalize from '../helpers/capitalize.js';
 
 const selectObserved = (parameters = [], type) => {
   return parameters

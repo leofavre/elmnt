@@ -1,8 +1,8 @@
-import withReflection from './withReflection.js';
+import withReflections from './withReflections.js';
 
 let spy;
 
-const Dummy = class extends withReflection() {
+const Dummy = class extends withReflections() {
   static get parameters () {
     return [{
       attr: 'attrOne',
@@ -47,7 +47,7 @@ class Parent {
   }
 }
 
-class Child extends withReflection(Parent) {
+class Child extends withReflections(Parent) {
   static get parameters () {
     return [{
       attr: 'attrOne',
@@ -56,7 +56,7 @@ class Child extends withReflection(Parent) {
   }
 }
 
-describe('withReflection', () => {
+describe('withReflections', () => {
   beforeEach(() => {
     spy = sinon.spy();
   });
@@ -67,7 +67,7 @@ describe('withReflection', () => {
 
   describe('.observedAttributes', () => {
     it('Should be an empty array if not set.', () => {
-      expect(withReflection().observedAttributes).to.deep.equal([]);
+      expect(withReflections().observedAttributes).to.deep.equal([]);
     });
 
     it('Should set observedAttributes based on parameters.', () => {
@@ -83,7 +83,7 @@ describe('withReflection', () => {
 
   describe('.observedProperties', () => {
     it('Should be an empty array if not set.', () => {
-      expect(withReflection().observedProperties).to.deep.equal([]);
+      expect(withReflections().observedProperties).to.deep.equal([]);
     });
 
     it('Should set observedProperties based on parameters.', () => {
@@ -129,7 +129,7 @@ describe('withReflection', () => {
     });
 
     it('Should not break when parameters are not set.', () => {
-      const Empty = withReflection();
+      const Empty = withReflections();
       const empty = new Empty();
       empty.connectedCallback();
       empty.attributeChangedCallback('notSet', '40', '72');
@@ -175,7 +175,7 @@ describe('withReflection', () => {
     });
 
     it('Should not break when parameters are not set.', () => {
-      const Empty = withReflection();
+      const Empty = withReflections();
       const empty = new Empty();
       empty.connectedCallback();
       empty.propertyChangedCallback('notSet', '40', '72');
