@@ -1,0 +1,43 @@
+{
+  "name": "elmnt",
+  "description": "An abstraction layer to handle setting and reflecting attributes and properties and reacting to their changes.",
+  "author": "Leonardo Favre <leo@leofavre.com> (https://www.leofavre.com/)",
+  "license": "MIT",
+  "main": "dist/cjs/es5/index.js",
+  "jsnext:main": "dist/es/es6/index.js",
+  "module": "src/index.js",
+  "scripts": {
+    "semantic-release": "semantic-release",
+    "send-coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "start": "agar start --no-root --no-scope",
+    "test": "agar test --no-root --no-scope",
+    "build": "agar build --no-root --no-scope"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leofavre/elmnt.git"
+  },
+  "keywords": [
+    "web-component",
+    "custom-element"
+  ],
+  "bugs": {
+    "url": "https://github.com/leofavre/elmnt/issues"
+  },
+  "homepage": "https://github.com/leofavre/elmnt#readme",
+  "devDependencies": {
+    "@leofavre/agar": "^1.6.1",
+    "@semantic-release/changelog": "^3.0.0",
+    "@semantic-release/git": "^7.0.4",
+    "coveralls": "^3.0.2",
+    "eslint": "^5.6.0",
+    "eslint-config-semistandard": "^12.0.1",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-react": "^7.11.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "semantic-release": "^15.9.16",
+    "semistandard": "^12.0.1"
+  }
+}
