@@ -33,6 +33,7 @@
   "overrides": [{
     "files": "*.spec.js",
     "rules": {
+      "no-new-wrappers": "off",
       "no-unused-expressions": "off"
     }
   }]
