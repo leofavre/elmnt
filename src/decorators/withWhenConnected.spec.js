@@ -1,5 +1,5 @@
 import {
-  PUB_SUB,
+  CALLBACKS,
   IS_CONNECTED,
   withWhenConnected
 } from './withWhenConnected.js';
@@ -28,8 +28,8 @@ describe('withWhenConnected', () => {
       dummy[IS_CONNECTED] = false;
       dummy.whenConnected(spy);
       expect(spy).not.to.have.been.called;
-      expect(dummy[PUB_SUB].length).to.equal(1);
-      expect(dummy[PUB_SUB][0]).to.equal(spy);
+      expect(dummy[CALLBACKS].length).to.equal(1);
+      expect(dummy[CALLBACKS][0]).to.equal(spy);
     });
   });
 
@@ -48,7 +48,7 @@ describe('withWhenConnected', () => {
     });
 
     it('Should execute a list of callbacks.', () => {
-      dummy[PUB_SUB] = [spy, spy, spy];
+      dummy[CALLBACKS] = [spy, spy, spy];
       expect(spy).not.to.have.been.called;
 
       dummy.connectedCallback();
