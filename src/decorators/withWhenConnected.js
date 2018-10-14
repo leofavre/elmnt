@@ -1,7 +1,7 @@
 export const CALLBACKS = Symbol('CALLBACKS');
 export const IS_CONNECTED = Symbol('IS_CONNECTED');
 
-export const withWhenConnected = (Base = class {}) => class extends Base {
+export default (Base = class {}) => class extends Base {
   constructor () {
     super();
     this[CALLBACKS] = [];

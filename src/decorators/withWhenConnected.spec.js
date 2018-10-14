@@ -1,8 +1,4 @@
-import {
-  CALLBACKS,
-  IS_CONNECTED,
-  withWhenConnected
-} from './withWhenConnected.js';
+import withWhenConnected, { CALLBACKS, IS_CONNECTED } from './withWhenConnected.js';
 
 let spy;
 const Enhanced = withWhenConnected();
@@ -17,7 +13,7 @@ describe('withWhenConnected', () => {
     spy = undefined;
   });
 
-  describe('#whenConnected', () => {
+  describe('#whenConnected()', () => {
     it('Should execute a function if connected.', () => {
       dummy[IS_CONNECTED] = true;
       dummy.whenConnected(spy);
@@ -33,7 +29,7 @@ describe('withWhenConnected', () => {
     });
   });
 
-  describe('#connectedCallback', () => {
+  describe('#connectedCallback()', () => {
     it('Should execute super.connectedCallback if it exists.', () => {
       const Base = class {
         connectedCallback () {
