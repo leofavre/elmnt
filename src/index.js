@@ -1,5 +1,4 @@
-import withReflection from './decorators/withReflection.js';
-import withWhenConnected from './decorators/withWhenConnected.js';
+import withElmnt from './decorators/withElmnt.js';
 
 import coerceToArray from './coercion/coerceToArray.js';
 import coerceToArrayOrUndefined from './coercion/coerceToArrayOrUndefined.js';
@@ -10,8 +9,7 @@ import coerceToString from './coercion/coerceToString.js';
 import coerceToStringOrUndefined from './coercion/coerceToStringOrUndefined.js';
 
 export {
-  withReflection,
-  withWhenConnected,
+  withElmnt,
   coerceToArray,
   coerceToArrayOrUndefined,
   coerceToBoolean,
