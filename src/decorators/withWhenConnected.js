@@ -1,23 +1,23 @@
-export const PUB_SUB = Symbol('PUB_SUB');
+export const CALLBACKS = Symbol('CALLBACKS');
 export const IS_CONNECTED = Symbol('IS_CONNECTED');
 
 export const withWhenConnected = (Base = class {}) => class extends Base {
   constructor () {
     super();
-    this[PUB_SUB] = [];
+    this[CALLBACKS] = [];
   }
 
-  whenConnected (fn) {
+  whenConnected (callback) {
     if (this[IS_CONNECTED]) {
-      fn();
+      callback();
     } else {
-      this[PUB_SUB].push(fn);
+      this[CALLBACKS].push(callback);
     }
   }
 
   connectedCallback () {
     super.connectedCallback && super.connectedCallback();
     this[IS_CONNECTED] = true;
-    this[PUB_SUB].forEach(fn => fn());
+    this[CALLBACKS].forEach(callback => callback());
   }
 };
