@@ -1,8 +1,4 @@
-import {
-  PUB_SUB,
-  IS_CONNECTED,
-  withWhenConnected
-} from './withWhenConnected.js';
+import withWhenConnected, { CALLBACKS, IS_CONNECTED } from './withWhenConnected.js';
 
 let spy;
 const Enhanced = withWhenConnected();
@@ -17,7 +13,7 @@ describe('withWhenConnected', () => {
     spy = undefined;
   });
 
-  describe('#whenConnected', () => {
+  describe('#whenConnected()', () => {
     it('Should execute a function if connected.', () => {
       dummy[IS_CONNECTED] = true;
       dummy.whenConnected(spy);
@@ -28,12 +24,12 @@ describe('withWhenConnected', () => {
       dummy[IS_CONNECTED] = false;
       dummy.whenConnected(spy);
       expect(spy).not.to.have.been.called;
-      expect(dummy[PUB_SUB].length).to.equal(1);
-      expect(dummy[PUB_SUB][0]).to.equal(spy);
+      expect(dummy[CALLBACKS].length).to.equal(1);
+      expect(dummy[CALLBACKS][0]).to.equal(spy);
     });
   });
 
-  describe('#connectedCallback', () => {
+  describe('#connectedCallback()', () => {
     it('Should execute super.connectedCallback if it exists.', () => {
       const Base = class {
         connectedCallback () {
@@ -48,7 +44,7 @@ describe('withWhenConnected', () => {
     });
 
     it('Should execute a list of callbacks.', () => {
-      dummy[PUB_SUB] = [spy, spy, spy];
+      dummy[CALLBACKS] = [spy, spy, spy];
       expect(spy).not.to.have.been.called;
 
       dummy.connectedCallback();
