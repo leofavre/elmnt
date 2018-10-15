@@ -17,6 +17,9 @@
     "type": "git",
     "url": "git+https://github.com/leofavre/elmnt.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "web-component",
     "custom-element"
