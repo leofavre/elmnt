@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/leofavre/elmnt/compare/v1.2.0...v1.3.0) (2018-10-15)
+
+
+### Features
+
+* Implement `withReducer` ([4b54d47](https://github.com/leofavre/elmnt/commit/4b54d47)), closes [#12](https://github.com/leofavre/elmnt/issues/12)
+
 # [1.2.0](https://github.com/leofavre/elmnt/compare/v1.1.0...v1.2.0) (2018-10-15)
 
 
