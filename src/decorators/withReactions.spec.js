@@ -1,5 +1,6 @@
+import withReactions from './withReactions.js';
+
 let spy;
-let dummy;
 
 describe('withReactions', () => {
   beforeEach(() => {
@@ -7,75 +8,190 @@ describe('withReactions', () => {
   });
 
   afterEach(() => {
-    dummy = undefined;
     spy = undefined;
   });
 
-  it('Should not break when extended without parameters.', () => {
+  class Dummy extends withReactions() {
+    handleReaction (...args) {
+      spy(...args);
+    }
+  }
 
+  class Parent {
+    attributeChangedCallback () {
+      spy('parentAttrChanged');
+    }
+
+    propertyChangedCallback () {
+      spy('parentPropChanged');
+    }
+  }
+
+  class Child extends withReactions(Parent) {}
+
+  describe('#attributeChangedCallback()', () => {
+    it('Should react to attribute changes.', () => {
+      const dummy = new Dummy();
+      dummy.attributeChangedCallback('myAttr', '50', '72');
+      expect(spy).to.have.been.calledWith('attr', 'myAttr', '50', '72');
+    });
+
+    it('Should not react if the attribute is still strictly the same ' +
+      'after change.', () => {
+      const dummy = new Dummy();
+      dummy.attributeChangedCallback('myAttr', '50', '50');
+      expect(spy).not.to.have.been.called;
+    });
+
+    it('Should not discard super.attributeChangedCallback.', () => {
+      const child = new Child();
+      child.attributeChangedCallback();
+      expect(spy).to.have.been.calledWith('parentAttrChanged');
+    });
   });
 
-  it('Should call super methods.', () => {
+  describe('#propertyChangedCallback()', () => {
+    it('Should react to property changes.', () => {
+      const dummy = new Dummy();
+      dummy.propertyChangedCallback('myAttr', '50', '72');
+      expect(spy).to.have.been.calledWith('prop', 'myAttr', '50', '72');
+    });
 
+    it('Should not react if the property is still strictly the same ' +
+      'after change.', () => {
+      const dummy = new Dummy();
+      dummy.propertyChangedCallback('myAttr', '50', '50');
+      expect(spy).not.to.have.been.called;
+    });
+
+    it('Should not discard super.propertyChangedCallback.', () => {
+      const child = new Child();
+      child.propertyChangedCallback();
+      expect(spy).to.have.been.calledWith('parentPropChanged');
+    });
   });
 
-  it('Should react to property changes.', () => {
+  class Phaser extends withReactions() {
+    static get parameters () {
+      return [{
+        attr: 'attrOne',
+        onAttrChanged: 'render'
+      }, {
+        prop: 'propOne',
+        onPropChanged: 'render'
+      }];
+    }
 
+    handleCallback (...args) {
+      return spy(...args);
+    }
+  }
+
+  describe('#handleReaction()', () => {
+    it('Should call handleCallback if an attribute changes.', () => {
+      const phaser = new Phaser();
+      phaser.handleReaction('attr', 'attrOne', '50', '72');
+      expect(spy).to.have.been.calledWith('render', '72', '50');
+    });
+
+    it('Should call handleCallback if a property changes.', () => {
+      const phaser = new Phaser();
+      phaser.handleReaction('prop', 'propOne', '50', '72');
+      expect(spy).to.have.been.calledWith('render', '72', '50');
+    });
+
+    it('Should ignore undefined reactions.', () => {
+      const phaser = new Phaser();
+      phaser.handleReaction('attr', 'notSet', '50', '72');
+      phaser.handleReaction('prop', 'notSet', '50', '72');
+      expect(spy).not.to.have.been.called;
+    });
   });
 
-  it('Should not react if the property is still strictly the same ' +
-    'after change.', () => {
+  class Laser extends withReactions() {
+    static get parameters () {
+      return [{
+        onAttrChanged (newValue, oldValue) {
+          spy('function', newValue, oldValue, this);
+        }
+      }, {
+        onPropChanged: 'react'
+      }, {
+        onPropChanged: ['render', 'render']
+      }, {
+        onAttrChanged: 'bogus'
+      }];
+    }
 
-  });
+    react (newValue, oldValue) {
+      spy('string', newValue, oldValue, this);
+    }
 
-  it('Should react to attribute changes.', () => {
+    render (newValue, oldValue) {
+      spy('array', newValue, oldValue, this);
+    }
+  }
 
-  });
+  describe('#handleCallback()', () => {
+    it('Should call a method if reaction is a function.', () => {
+      const laser = new Laser();
+      laser.connectedCallback();
+      laser.handleCallback(Laser.parameters[0].onAttrChanged, '72', '50');
+      expect(spy).to.have.been.calledWith('function', '72', '50');
+    });
 
-  it('Should not react if the attribute is still strictly the same ' +
-    'after change.', () => {
+    it('Should call a method if reaction is a string.', () => {
+      const laser = new Laser();
+      laser.connectedCallback();
+      laser.handleCallback(Laser.parameters[1].onPropChanged, '72', '50');
+      expect(spy).to.have.been.calledWith('string', '72', '50');
+    });
 
-  });
+    it('Should call many methods, in order, if reaction is an array.', () => {
+      const laser = new Laser();
+      laser.connectedCallback();
+      laser.handleCallback(Laser.parameters[2].onPropChanged, '72', '50');
+      expect(spy).to.have.been.calledTwice;
+      expect(spy).to.always.have.been.calledWith('array', '72', '50');
+    });
 
-  it('Should be called with new value and old value.', () => {
+    it('Should correctly bind this if reaction is a function.', () => {
+      const laser = new Laser();
+      laser.connectedCallback();
+      laser.handleCallback(Laser.parameters[0].onAttrChanged, '72', '50');
+      expect(spy).to.have.been.calledWith('function', '72', '50', laser);
+    });
 
-  });
+    it('Should correctly bind this if reaction is a string.', () => {
+      const laser = new Laser();
+      laser.connectedCallback();
+      laser.handleCallback(Laser.parameters[1].onPropChanged, '72', '50');
+      expect(spy).to.have.been.calledWith('string', '72', '50', laser);
+    });
 
-  it('Should wait for the component to be appended to the DOM ' +
-    'before reacting to attribute changes.', () => {
+    it('Should correctly bind this if reaction is an array.', () => {
+      const laser = new Laser();
+      laser.connectedCallback();
+      laser.handleCallback(Laser.parameters[2].onPropChanged, '72', '50');
+      expect(spy).to.have.been.calledTwice;
+      expect(spy).to.always.have.been.calledWith('array', '72', '50', laser);
+    });
 
-  });
+    it('Should ignore defined reactions that leads to ' +
+      'undefined methods.', () => {
+      const laser = new Laser();
+      laser.connectedCallback();
+      laser.handleCallback(Laser.parameters[3].onAttrChanged, '72', '50');
+      expect(spy).not.to.have.been.called;
+    });
 
-  it('Should wait for the component to be appended to the DOM ' +
-    'before reacting to property changes.', () => {
+    it('Should wait until connected before reacting to changes.', () => {
+      const laser = new Laser();
+      laser.handleCallback(Laser.parameters[0].onAttrChanged, '72', '50');
+      expect(spy).not.to.have.been.called;
 
-  });
-
-  it('Should ignore undefined reactions.', () => {
-
-  });
-
-  it('Should ignore defined reactions that leads to undefined methods.', () => {
-
-  });
-
-  it('Should call a method if reaction is a function.', () => {
-
-  });
-
-  it('Should call a method if reaction is a string.', () => {
-
-  });
-
-  it('Should call many methods, in order, if reaction is an array.', () => {
-
-  });
-
-  it('Should correctly bind this if reaction is a function.', () => {
-
-  });
-
-  it('Should correctly bind this if reaction is a string.', () => {
-
+      laser.connectedCallback();
+      expect(spy).to.have.been.calledWith('function', '72', '50', laser);
+    });
   });
 });
