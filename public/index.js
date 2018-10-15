@@ -10,16 +10,14 @@ class Element extends withElmnt(HTMLElement) {
     return [{
       attr: 'my-level',
       prop: 'myLevel',
-      toProp: coerceToNumberOrUndefined
+      toProp: coerceToNumberOrUndefined,
+      onPropChanged: 'render'
     }];
   }
 
-  propertyChangedCallback (...args) {
-    super.propertyChangedCallback(...args);
-    this.render(this);
-  }
+  render () {
+    const { myLevel } = this;
 
-  render ({ myLevel }) {
     this.shadowRoot.innerHTML = `
       <style>div { font-size: 48px };</style>
       <div>${(myLevel != null && myLevel !== false) ? myLevel : 'xxx'}</div>

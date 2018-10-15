@@ -14,13 +14,9 @@ const Dummy = class extends withReflections() {
         return spy('toProp', value);
       }
     }, {
-      attr: 'attrTwo',
-      attrProp: 'attrPropOne'
+      attr: 'attrTwo'
     }, {
-      prop: 'propTwo',
-      attrProp: 'attrPropTwo'
-    }, {
-      attrProp: 'both'
+      prop: 'propTwo'
     }];
   }
 
@@ -72,7 +68,7 @@ describe('withReflections', () => {
 
     it('Should set observedAttributes based on parameters.', () => {
       expect(Dummy.observedAttributes)
-        .to.deep.equal(['attrOne', 'attrTwo', 'attrPropTwo', 'both']);
+        .to.deep.equal(['attrOne', 'attrTwo']);
     });
 
     it('Should not discard super.observedAttributes.', () => {
@@ -88,7 +84,7 @@ describe('withReflections', () => {
 
     it('Should set observedProperties based on parameters.', () => {
       expect(Dummy.observedProperties)
-        .to.deep.equal(['propOne', 'attrPropOne', 'propTwo', 'both']);
+        .to.deep.equal(['propOne', 'propTwo']);
     });
 
     it('Should not discard super.observedProperties.', () => {
