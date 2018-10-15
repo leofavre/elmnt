@@ -1,72 +1,55 @@
-import withObservedProperties from 'observed-properties';
 import withWhenConnected from './withWhenConnected.js';
-import setAttr from '../helpers/setAttr.js';
+import setAttr from '../common/setAttr.js';
+import parseParameters from '../common/parseParameters.js';
+import selectParameter from '../common/selectParameter.js';
 import same from '../helpers/same.js';
-import capitalize from '../helpers/capitalize.js';
 
-const selectObserved = (parameters = [], type) => {
-  return parameters
-    .map(param => (param[type] != null) ? param[type] : param.attrProp)
-    .filter(value => value != null);
+export default (Base = class {}) => class extends withWhenConnected(Base) {
+  static get observedAttributes () {
+    const parameters = parseParameters(this);
+
+    return [
+      ...(super.observedAttributes || []),
+      ...parameters.map(param => param.attr).filter(value => value != null)
+    ];
+  }
+
+  static get observedProperties () {
+    const parameters = parseParameters(this);
+
+    return [
+      ...(super.observedProperties || []),
+      ...parameters.map(param => param.prop).filter(value => value != null)
+    ];
+  }
+
+  attributeChangedCallback (paramName, oldValue, newValue) {
+    super.attributeChangedCallback &&
+      super.attributeChangedCallback(paramName, oldValue, newValue);
+
+    const parameter = selectParameter(this.constructor, 'attr', paramName);
+    const name = parameter.prop;
+    const coerce = parameter.toProp || same;
+
+    if (name != null && oldValue !== newValue) {
+      this.whenConnected(() => {
+        this[name] = coerce(newValue);
+      });
+    }
+  }
+
+  propertyChangedCallback (paramName, oldValue, newValue) {
+    super.propertyChangedCallback &&
+      super.propertyChangedCallback(paramName, oldValue, newValue);
+
+    const parameter = selectParameter(this.constructor, 'prop', paramName);
+    const name = parameter.attr;
+    const coerce = parameter.toAttr || same;
+
+    if (name != null && oldValue !== newValue) {
+      this.whenConnected(() => {
+        setAttr(this, name, coerce(newValue));
+      });
+    }
+  }
 };
-
-const selectNameAndCoercion = (parameters = [], type, altType, paramName) => {
-  const parameter = parameters.find(param =>
-    [param[type], param.attrProp].includes(paramName)) || {};
-
-  const name = parameter[altType] || parameter.attrProp;
-  const coerce = parameter[`to${capitalize(altType)}`] || same;
-
-  return { name, coerce };
-};
-
-export default (Base = class {}) =>
-  class extends withObservedProperties(withWhenConnected(Base)) {
-    static get observedAttributes () {
-      const { parameters } = this;
-
-      return [
-        ...(super.observedAttributes || []),
-        ...selectObserved(parameters, 'attr')
-      ];
-    }
-
-    static get observedProperties () {
-      const { parameters } = this;
-
-      return [
-        ...(super.observedProperties || []),
-        ...selectObserved(parameters, 'prop')
-      ];
-    }
-
-    attributeChangedCallback (paramName, oldValue, newValue) {
-      super.attributeChangedCallback &&
-        super.attributeChangedCallback(paramName, oldValue, newValue);
-
-      const { parameters } = this.constructor;
-      const { name, coerce } =
-        selectNameAndCoercion(parameters, 'attr', 'prop', paramName);
-
-      if (name != null && oldValue !== newValue) {
-        this.whenConnected(() => {
-          this[name] = coerce(newValue);
-        });
-      }
-    }
-
-    propertyChangedCallback (paramName, oldValue, newValue) {
-      super.propertyChangedCallback &&
-        super.propertyChangedCallback(paramName, oldValue, newValue);
-
-      const { parameters } = this.constructor;
-      const { name, coerce } =
-        selectNameAndCoercion(parameters, 'prop', 'attr', paramName);
-
-      if (name != null && oldValue !== newValue) {
-        this.whenConnected(() => {
-          setAttr(this, name, coerce(newValue));
-        });
-      }
-    }
-  };
