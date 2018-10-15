@@ -1,6 +1,6 @@
 {
-  "name": "elmnt",
-  "description": "An abstraction layer to handle setting and reflecting attributes and properties and reacting to their changes.",
+  "name": "@leofavre/elmnt",
+  "description": "An abstraction layer to set and reflect attributes and properties on custom elements and react to their changes.",
   "author": "Leonardo Favre <leo@leofavre.com> (https://www.leofavre.com/)",
   "license": "MIT",
   "main": "dist/cjs/es5/index.js",
