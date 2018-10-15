@@ -1,6 +1,7 @@
 import withElmnt from './decorators/withElmnt.js';
 import withSetState from './decorators/withSetState.js';
 import withDomEventsRaw from './decorators/withDomEvents.js';
+import withReducer from './decorators/withReducer.js';
 
 import coerceToArray from './coercion/coerceToArray.js';
 import coerceToArrayOrUndefined from './coercion/coerceToArrayOrUndefined.js';
@@ -16,6 +17,7 @@ export {
   withElmnt,
   withSetState,
   withDomEvents,
+  withReducer,
   coerceToArray,
   coerceToArrayOrUndefined,
   coerceToBoolean,
