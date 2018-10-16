@@ -6,8 +6,9 @@ import isFunction from '../helpers/isFunction.js';
 
 export default (Base = class {}) => class extends withWhenConnected(Base) {
   attributeChangedCallback (attrName, oldValue, newValue) {
-    super.attributeChangedCallback &&
+    if (isFunction(super.attributeChangedCallback)) {
       super.attributeChangedCallback(attrName, oldValue, newValue);
+    }
 
     if (oldValue !== newValue) {
       this.handleReaction('attr', attrName, oldValue, newValue);
@@ -15,8 +16,9 @@ export default (Base = class {}) => class extends withWhenConnected(Base) {
   }
 
   propertyChangedCallback (propName, oldValue, newValue) {
-    super.propertyChangedCallback &&
+    if (isFunction(super.propertyChangedCallback)) {
       super.propertyChangedCallback(propName, oldValue, newValue);
+    }
 
     if (oldValue !== newValue) {
       this.handleReaction('prop', propName, oldValue, newValue);

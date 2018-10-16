@@ -3,6 +3,7 @@ import setAttr from '../common/setAttr.js';
 import parseParameters from '../common/parseParameters.js';
 import selectParameter from '../common/selectParameter.js';
 import same from '../helpers/same.js';
+import isFunction from '../helpers/isFunction.js';
 
 export default (Base = class {}) => class extends withWhenConnected(Base) {
   static get observedAttributes () {
@@ -24,8 +25,9 @@ export default (Base = class {}) => class extends withWhenConnected(Base) {
   }
 
   attributeChangedCallback (paramName, oldValue, newValue) {
-    super.attributeChangedCallback &&
+    if (isFunction(super.attributeChangedCallback)) {
       super.attributeChangedCallback(paramName, oldValue, newValue);
+    }
 
     const parameter = selectParameter(this.constructor, 'attr', paramName);
     const name = parameter.prop;
@@ -39,8 +41,9 @@ export default (Base = class {}) => class extends withWhenConnected(Base) {
   }
 
   propertyChangedCallback (paramName, oldValue, newValue) {
-    super.propertyChangedCallback &&
+    if (isFunction(super.propertyChangedCallback)) {
       super.propertyChangedCallback(paramName, oldValue, newValue);
+    }
 
     const parameter = selectParameter(this.constructor, 'prop', paramName);
     const name = parameter.attr;

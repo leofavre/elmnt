@@ -1,3 +1,5 @@
+import { html } from 'lit-html';
+
 import withElmnt from './decorators/withElmnt.js';
 import withSetState from './decorators/withSetState.js';
 import withDomEventsRaw from './decorators/withDomEvents.js';
@@ -14,6 +16,7 @@ import coerceToStringOrUndefined from './coercion/coerceToStringOrUndefined.js';
 const withDomEvents = withDomEventsRaw(window.CustomEvent);
 
 export {
+  html,
   withElmnt,
   withSetState,
   withDomEvents,

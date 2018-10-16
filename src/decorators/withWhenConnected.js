@@ -1,3 +1,5 @@
+import isFunction from '../helpers/isFunction.js';
+
 export const CALLBACKS = Symbol('CALLBACKS');
 export const IS_CONNECTED = Symbol('IS_CONNECTED');
 
@@ -16,7 +18,9 @@ export default (Base = class {}) => class extends Base {
   }
 
   connectedCallback () {
-    super.connectedCallback && super.connectedCallback();
+    if (isFunction(super.connectedCallback)) {
+      super.connectedCallback();
+    }
     this[IS_CONNECTED] = true;
     this[CALLBACKS].forEach(callback => callback());
   }
