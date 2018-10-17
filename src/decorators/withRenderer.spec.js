@@ -7,14 +7,12 @@ class Dummy extends withRendererRaw(render, TemplateResult)() {}
 
 describe('withRenderer', () => {
   beforeEach(() => {
-    Dummy.prototype.connectedCallback = sinon.spy();
     Dummy.prototype.attachShadow = sinon.spy();
     dummy = new Dummy();
   });
 
   afterEach(() => {
     dummy = null;
-    Dummy.prototype.connectedCallback = null;
     Dummy.prototype.attachShadow = null;
   });
 
@@ -24,6 +22,53 @@ describe('withRenderer', () => {
         .to.have.been.calledOnceWith({ mode: 'open' });
 
       expect(dummy.constructor).to.equal(Dummy);
+    });
+  });
+
+  describe('#connectedCallback()', () => {
+    it('Should not discard super.connectedCallback.', () => {
+      class Parent {}
+      Parent.prototype.connectedCallback = sinon.spy();
+      class Child extends withRendererRaw(render, TemplateResult)(Parent) {}
+      const child = new Child();
+      child.connectedCallback();
+      expect(Parent.prototype.connectedCallback).to.have.been.calledOnce;
+    });
+
+    it('Should call this.updateRender.', () => {
+      dummy.updateRender = sinon.spy();
+      dummy.connectedCallback();
+      expect(dummy.updateRender).to.have.been.calledOnce;
+    });
+  });
+
+  describe('#updateRender()', () => {
+    it('Should return undefined if this.render is not set.', () => {
+      expect(dummy.updateRender()).to.be.undefined;
+    });
+
+    it('Should use the external lit-html render method if this.render ' +
+      'returns a TemplateResult instance.', () => {
+      dummy.render = function () {
+        return new TemplateResult();
+      };
+
+      dummy.shadowRoot = {};
+      dummy.updateRender();
+
+      expect(render).to.have.been.calledOnce;
+    });
+
+    it('Should directly set innerHTML on the shadowRoot if this.render ' +
+      'returns something else then a TemplateResult instance.', () => {
+      dummy.render = function () {
+        return 'string';
+      };
+
+      dummy.shadowRoot = {};
+      dummy.updateRender();
+
+      expect(dummy.shadowRoot.innerHTML).to.equal('string');
     });
   });
 });

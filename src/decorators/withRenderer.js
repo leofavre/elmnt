@@ -24,11 +24,7 @@ export default (render, TemplateResult) => (Base = class {}) =>
         renderResult = this.render(this);
       }
 
-      if (renderResult == null) {
-        return undefined;
-      }
-
-      if (this.shadowRoot) {
+      if (this.shadowRoot && renderResult != null) {
         if (renderResult.constructor === TemplateResult) {
           render(renderResult, this.shadowRoot);
         } else {
