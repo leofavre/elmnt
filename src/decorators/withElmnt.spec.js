@@ -17,4 +17,8 @@ describe('withElmnt', () => {
     expect(dummy.handleReaction).to.be.a('function');
     expect(dummy.handleCallback).to.be.a('function');
   });
+
+  it('Should import withRenderer.', () => {
+    expect(dummy.updateRender).to.be.a('function');
+  });
 });
