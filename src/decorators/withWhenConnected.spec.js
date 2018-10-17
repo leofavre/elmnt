@@ -31,16 +31,14 @@ describe('withWhenConnected', () => {
 
   describe('#connectedCallback()', () => {
     it('Should execute super.connectedCallback if it exists.', () => {
-      const Base = class {
-        connectedCallback () {
-          spy();
-        }
-      };
+      const Base = class {};
+      Base.prototype.connectedCallback = sinon.spy();
 
       const Child = withWhenConnected(Base);
       const child = new Child();
       child.connectedCallback();
-      expect(spy).to.have.been.calledOnce;
+
+      expect(Base.prototype.connectedCallback).to.have.been.calledOnce;
     });
 
     it('Should execute a list of callbacks.', () => {
