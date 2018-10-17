@@ -1,76 +1,72 @@
 import withReactions from './withReactions.js';
 
-let spy;
-
 describe('withReactions', () => {
+  class Dummy extends withReactions() {}
+  class Parent {}
+  class Child extends withReactions(Parent) {}
+
+  let dummy;
+  let child;
+
   beforeEach(() => {
-    spy = sinon.spy();
+    Dummy.prototype.handleReaction = sinon.spy();
+    Parent.prototype.attributeChangedCallback = sinon.spy();
+    Parent.prototype.propertyChangedCallback = sinon.spy();
+    dummy = new Dummy();
+    child = new Child();
   });
 
   afterEach(() => {
-    spy = undefined;
+    dummy = null;
+    child = null;
+    Dummy.prototype.handleReaction = null;
+    Parent.prototype.attributeChangedCallback = null;
+    Parent.prototype.propertyChangedCallback = null;
   });
-
-  class Dummy extends withReactions() {
-    handleReaction (...args) {
-      spy(...args);
-    }
-  }
-
-  class Parent {
-    attributeChangedCallback () {
-      spy('parentAttrChanged');
-    }
-
-    propertyChangedCallback () {
-      spy('parentPropChanged');
-    }
-  }
-
-  class Child extends withReactions(Parent) {}
 
   describe('#attributeChangedCallback()', () => {
     it('Should react to attribute changes.', () => {
-      const dummy = new Dummy();
       dummy.attributeChangedCallback('myAttr', '50', '72');
-      expect(spy).to.have.been.calledWith('attr', 'myAttr', '50', '72');
+
+      expect(Dummy.prototype.handleReaction)
+        .to.have.been.calledWith('attr', 'myAttr', '50', '72');
     });
 
     it('Should not react if the attribute is still strictly the same ' +
       'after change.', () => {
-      const dummy = new Dummy();
       dummy.attributeChangedCallback('myAttr', '50', '50');
-      expect(spy).not.to.have.been.called;
+
+      expect(Dummy.prototype.handleReaction)
+        .not.to.have.been.called;
     });
 
     it('Should not discard super.attributeChangedCallback.', () => {
-      const child = new Child();
       child.attributeChangedCallback();
-      expect(spy).to.have.been.calledWith('parentAttrChanged');
+      expect(Parent.prototype.attributeChangedCallback).to.have.been.calledOnce;
     });
   });
 
   describe('#propertyChangedCallback()', () => {
     it('Should react to property changes.', () => {
-      const dummy = new Dummy();
       dummy.propertyChangedCallback('myAttr', '50', '72');
-      expect(spy).to.have.been.calledWith('prop', 'myAttr', '50', '72');
+      expect(Dummy.prototype.handleReaction)
+        .to.have.been.calledWith('prop', 'myAttr', '50', '72');
     });
 
     it('Should not react if the property is still strictly the same ' +
       'after change.', () => {
-      const dummy = new Dummy();
       dummy.propertyChangedCallback('myAttr', '50', '50');
-      expect(spy).not.to.have.been.called;
+      expect(Dummy.prototype.handleReaction).not.to.have.been.called;
     });
 
     it('Should not discard super.propertyChangedCallback.', () => {
-      const child = new Child();
       child.propertyChangedCallback();
-      expect(spy).to.have.been.calledWith('parentPropChanged');
+      expect(Parent.prototype.propertyChangedCallback).to.have.been.calledOnce;
     });
   });
+});
 
+describe('withReactions', () => {
   class Phaser extends withReactions() {
     static get parameters () {
       return [{
@@ -81,117 +77,112 @@ describe('withReactions', () => {
         onPropChanged: 'render'
       }];
     }
-
-    handleCallback (...args) {
-      return spy(...args);
-    }
   }
+
+  let phaser;
+
+  beforeEach(() => {
+    Phaser.prototype.handleCallback = sinon.spy();
+    phaser = new Phaser();
+  });
+
+  afterEach(() => {
+    phaser = null;
+    Phaser.prototype.handleCallback = null;
+  });
 
   describe('#handleReaction()', () => {
     it('Should call handleCallback if an attribute changes.', () => {
-      const phaser = new Phaser();
       phaser.handleReaction('attr', 'attrOne', '50', '72');
-      expect(spy).to.have.been.calledWith('render', '72', '50');
+
+      expect(Phaser.prototype.handleCallback)
+        .to.have.been.calledWith('render', '72', '50');
     });
 
     it('Should call handleCallback if a property changes.', () => {
-      const phaser = new Phaser();
       phaser.handleReaction('prop', 'propOne', '50', '72');
-      expect(spy).to.have.been.calledWith('render', '72', '50');
+
+      expect(Phaser.prototype.handleCallback)
+        .to.have.been.calledWith('render', '72', '50');
     });
 
     it('Should ignore undefined reactions.', () => {
-      const phaser = new Phaser();
       phaser.handleReaction('attr', 'notSet', '50', '72');
       phaser.handleReaction('prop', 'notSet', '50', '72');
-      expect(spy).not.to.have.been.called;
+
+      expect(Phaser.prototype.handleCallback)
+        .not.to.have.been.called;
     });
   });
+});
 
-  class Laser extends withReactions() {
-    static get parameters () {
-      return [{
-        onAttrChanged (newValue, oldValue) {
-          spy('function', newValue, oldValue, this);
-        }
-      }, {
-        onPropChanged: 'react'
-      }, {
-        onPropChanged: ['render', 'render']
-      }, {
-        onAttrChanged: 'bogus'
-      }];
-    }
+describe('withReactions', () => {
+  class Laser extends withReactions() {}
 
-    react (newValue, oldValue) {
-      spy('string', newValue, oldValue, this);
-    }
+  let laser;
 
-    render (newValue, oldValue) {
-      spy('array', newValue, oldValue, this);
-    }
-  }
+  beforeEach(() => {
+    Laser.parameters = [{
+      onAttrChanged: sinon.spy()
+    }, {
+      onPropChanged: 'react'
+    }, {
+      onPropChanged: ['render', 'render']
+    }, {
+      onAttrChanged: 'bogus'
+    }];
+
+    Laser.prototype.react = sinon.spy();
+    Laser.prototype.render = sinon.spy();
+
+    laser = new Laser();
+  });
+
+  afterEach(() => {
+    laser = null;
+    Laser.pamareters = null;
+    Laser.prototype.react = null;
+    Laser.prototype.render = null;
+  });
 
   describe('#handleCallback()', () => {
     it('Should call a method if reaction is a function.', () => {
-      const laser = new Laser();
       laser.connectedCallback();
       laser.handleCallback(Laser.parameters[0].onAttrChanged, '72', '50');
-      expect(spy).to.have.been.calledWith('function', '72', '50');
+
+      expect(Laser.parameters[0].onAttrChanged)
+        .to.have.been.calledWith('72', '50');
     });
 
     it('Should call a method if reaction is a string.', () => {
-      const laser = new Laser();
       laser.connectedCallback();
       laser.handleCallback(Laser.parameters[1].onPropChanged, '72', '50');
-      expect(spy).to.have.been.calledWith('string', '72', '50');
+      expect(Laser.prototype.react).to.have.been.calledWith('72', '50');
     });
 
     it('Should call many methods, in order, if reaction is an array.', () => {
-      const laser = new Laser();
       laser.connectedCallback();
       laser.handleCallback(Laser.parameters[2].onPropChanged, '72', '50');
-      expect(spy).to.have.been.calledTwice;
-      expect(spy).to.always.have.been.calledWith('array', '72', '50');
-    });
-
-    it('Should correctly bind this if reaction is a function.', () => {
-      const laser = new Laser();
-      laser.connectedCallback();
-      laser.handleCallback(Laser.parameters[0].onAttrChanged, '72', '50');
-      expect(spy).to.have.been.calledWith('function', '72', '50', laser);
-    });
-
-    it('Should correctly bind this if reaction is a string.', () => {
-      const laser = new Laser();
-      laser.connectedCallback();
-      laser.handleCallback(Laser.parameters[1].onPropChanged, '72', '50');
-      expect(spy).to.have.been.calledWith('string', '72', '50', laser);
-    });
-
-    it('Should correctly bind this if reaction is an array.', () => {
-      const laser = new Laser();
-      laser.connectedCallback();
-      laser.handleCallback(Laser.parameters[2].onPropChanged, '72', '50');
-      expect(spy).to.have.been.calledTwice;
-      expect(spy).to.always.have.been.calledWith('array', '72', '50', laser);
+      expect(Laser.prototype.render).to.have.been.calledTwice;
+      expect(Laser.prototype.render).to.always.have.been.calledWith('72', '50');
     });
 
     it('Should ignore defined reactions that leads to ' +
       'undefined methods.', () => {
-      const laser = new Laser();
       laser.connectedCallback();
       laser.handleCallback(Laser.parameters[3].onAttrChanged, '72', '50');
-      expect(spy).not.to.have.been.called;
+      expect(Laser.parameters[0].onAttrChanged).not.to.have.been.called;
+      expect(Laser.prototype.react).not.to.have.been.called;
+      expect(Laser.prototype.render).not.to.have.been.called;
     });
 
     it('Should wait until connected before reacting to changes.', () => {
-      const laser = new Laser();
       laser.handleCallback(Laser.parameters[0].onAttrChanged, '72', '50');
-      expect(spy).not.to.have.been.called;
+      expect(Laser.parameters[0].onAttrChanged).not.to.have.been.called;
 
       laser.connectedCallback();
-      expect(spy).to.have.been.calledWith('function', '72', '50', laser);
+      expect(Laser.parameters[0].onAttrChanged)
+        .to.have.been.calledWith('72', '50');
     });
   });
 });

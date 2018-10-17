@@ -1,7 +1,5 @@
 import withDomEventsRaw from './withDomEvents.js';
 
-let spy;
-
 class EventMaker {
   constructor (evtName, detail) {
     this.evtName = evtName;
@@ -12,27 +10,19 @@ class EventMaker {
 class Dummy extends withDomEventsRaw(EventMaker)() {}
 
 describe('withDomEvents', () => {
-  beforeEach(() => {
-    spy = sinon.spy();
-  });
-
-  afterEach(() => {
-    spy = undefined;
-  });
-
   describe('#dispatchEventAndMethod()', () => {
     it('Should dispatch a DOM Event with name and detail.', () => {
       const dummy = new Dummy();
 
-      dummy.dispatchEvent = spy;
+      dummy.dispatchEvent = sinon.spy();
       dummy.dispatchEventAndMethod('open', 'door');
 
-      expect(spy).to.have.been.calledOnce;
-      expect(spy.args[0][0].evtName).to.equal('open');
-
-      expect(spy.args[0][0].detail).to.deep.equal({
-        bubbles: true,
-        detail: 'door'
+      expect(dummy.dispatchEvent).to.have.been.calledOnceWith({
+        evtName: 'open',
+        detail: {
+          bubbles: true,
+          detail: 'door'
+        }
       });
     });
 
@@ -40,15 +30,15 @@ describe('withDomEvents', () => {
       const dummy = new Dummy();
 
       dummy.dispatchEvent = function () {};
-      dummy.onopen = spy;
+      dummy.onopen = sinon.spy();
       dummy.dispatchEventAndMethod('open', 'door');
 
-      expect(spy).to.have.been.calledOnce;
-      expect(spy.args[0][0].evtName).to.equal('open');
-
-      expect(spy.args[0][0].detail).to.deep.equal({
-        bubbles: true,
-        detail: 'door'
+      expect(dummy.onopen).to.have.been.calledOnceWith({
+        evtName: 'open',
+        detail: {
+          bubbles: true,
+          detail: 'door'
+        }
       });
     });
   });
