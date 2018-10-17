@@ -139,10 +139,10 @@ describe('withReactions', () => {
   });
 
   afterEach(() => {
+    laser = null;
     Laser.pamareters = null;
     Laser.prototype.react = null;
     Laser.prototype.render = null;
-    laser = null;
   });
 
   describe('#handleCallback()', () => {
