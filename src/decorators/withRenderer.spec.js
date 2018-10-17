@@ -1,25 +1,29 @@
 import withRendererRaw from './withRenderer.js';
 
-let spy;
-
+let dummy;
+const render = sinon.spy();
 class TemplateResult {}
-
-const render = (arg) => {
-  spy('render', arg);
-};
-
-class Dummy extends withRendererRaw(render, TemplateResult)() {
-  attachShadow (arg) {
-    spy('attachShadow', arg);
-  }
-}
+class Dummy extends withRendererRaw(render, TemplateResult)() {}
 
 describe('withRenderer', () => {
   beforeEach(() => {
-    spy = sinon.spy();
+    Dummy.prototype.connectedCallback = sinon.spy();
+    Dummy.prototype.attachShadow = sinon.spy();
+    dummy = new Dummy();
   });
 
   afterEach(() => {
-    spy = undefined;
+    dummy = null;
+    Dummy.prototype.connectedCallback = null;
+    Dummy.prototype.attachShadow = null;
+  });
+
+  describe('#constructor()', () => {
+    it('Should attach the shadow DOM.', () => {
+      expect(Dummy.prototype.attachShadow)
+        .to.have.been.calledOnceWith({ mode: 'open' });
+
+      expect(dummy.constructor).to.equal(Dummy);
+    });
   });
 });
