@@ -17,12 +17,12 @@ describe('withDomEvents', () => {
       dummy.dispatchEvent = sinon.spy();
       dummy.dispatchEventAndMethod('open', 'door');
 
-      expect(dummy.dispatchEvent).to.have.been.calledOnce;
-      expect(dummy.dispatchEvent.args[0][0].evtName).to.equal('open');
-
-      expect(dummy.dispatchEvent.args[0][0].detail).to.deep.equal({
-        bubbles: true,
-        detail: 'door'
+      expect(dummy.dispatchEvent).to.have.been.calledOnceWith({
+        evtName: 'open',
+        detail: {
+          bubbles: true,
+          detail: 'door'
+        }
       });
     });
 
@@ -33,12 +33,12 @@ describe('withDomEvents', () => {
       dummy.onopen = sinon.spy();
       dummy.dispatchEventAndMethod('open', 'door');
 
-      expect(dummy.onopen).to.have.been.calledOnce;
-      expect(dummy.onopen.args[0][0].evtName).to.equal('open');
-
-      expect(dummy.onopen.args[0][0].detail).to.deep.equal({
-        bubbles: true,
-        detail: 'door'
+      expect(dummy.onopen).to.have.been.calledOnceWith({
+        evtName: 'open',
+        detail: {
+          bubbles: true,
+          detail: 'door'
+        }
       });
     });
   });
