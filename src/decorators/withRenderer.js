@@ -4,7 +4,10 @@ export default (render, TemplateResult) => (Base = class {}) =>
   class extends Base {
     constructor () {
       super();
-      this.attachShadow({ mode: 'open' });
+
+      if (isFunction(this.attachShadow)) {
+        this.attachShadow({ mode: 'open' });
+      }
     }
 
     connectedCallback () {
@@ -25,10 +28,12 @@ export default (render, TemplateResult) => (Base = class {}) =>
         return undefined;
       }
 
-      if (renderResult.constructor === TemplateResult) {
-        render(renderResult, this.shadowRoot);
-      } else {
-        this.shadowRoot.innerHTML = renderResult;
+      if (this.shadowRoot) {
+        if (renderResult.constructor === TemplateResult) {
+          render(renderResult, this.shadowRoot);
+        } else {
+          this.shadowRoot.innerHTML = renderResult;
+        }
       }
     }
   };
