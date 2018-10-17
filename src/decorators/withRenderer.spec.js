@@ -35,16 +35,16 @@ describe('withRenderer', () => {
       expect(Parent.prototype.connectedCallback).to.have.been.calledOnce;
     });
 
-    it('Should call this.updateRender.', () => {
-      dummy.updateRender = sinon.spy();
+    it('Should call this.updateLayout.', () => {
+      dummy.updateLayout = sinon.spy();
       dummy.connectedCallback();
-      expect(dummy.updateRender).to.have.been.calledOnce;
+      expect(dummy.updateLayout).to.have.been.calledOnce;
     });
   });
 
-  describe('#updateRender()', () => {
+  describe('#updateLayout()', () => {
     it('Should return undefined if this.render is not set.', () => {
-      expect(dummy.updateRender()).to.be.undefined;
+      expect(dummy.updateLayout()).to.be.undefined;
     });
 
     it('Should use the external lit-html render method if this.render ' +
@@ -54,7 +54,7 @@ describe('withRenderer', () => {
       };
 
       dummy.shadowRoot = {};
-      dummy.updateRender();
+      dummy.updateLayout();
 
       expect(render).to.have.been.calledOnce;
     });
@@ -66,7 +66,7 @@ describe('withRenderer', () => {
       };
 
       dummy.shadowRoot = {};
-      dummy.updateRender();
+      dummy.updateLayout();
 
       expect(dummy.shadowRoot.innerHTML).to.equal('string');
     });

@@ -6,7 +6,7 @@ class Element extends withElmnt(HTMLElement) {
       attr: 'my-level',
       prop: 'myLevel',
       toProp: coerceToNumberOrUndefined,
-      onPropChanged: 'updateRender'
+      onPropChanged: 'updateLayout'
     }];
   }
 

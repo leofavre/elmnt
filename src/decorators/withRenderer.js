@@ -14,10 +14,10 @@ export default (render, TemplateResult) => (Base = class {}) =>
       if (isFunction(super.connectedCallback)) {
         super.connectedCallback();
       }
-      this.updateRender();
+      this.updateLayout();
     }
 
-    updateRender () {
+    updateLayout () {
       let renderResult;
 
       if (isFunction(this.render)) {

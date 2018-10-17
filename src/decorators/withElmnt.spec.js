@@ -19,6 +19,6 @@ describe('withElmnt', () => {
   });
 
   it('Should import withRenderer.', () => {
-    expect(dummy.updateRender).to.be.a('function');
+    expect(dummy.updateLayout).to.be.a('function');
   });
 });
